@@ -1,3 +1,6 @@
+
+<!DOCTYPE html>
+<html lang="en">
 <%@ page import="java.util.*"%>
 <%@ page import="javax.servlet.http.HttpServletRequest"%>
 <%@ page import="javax.servlet.http.HttpServletResponse"%>
@@ -17,7 +20,7 @@
 
 <%
 	if (session.getAttribute("businesses") == null) {
-		response.sendRedirect("http://localhost:8080/j2eeapplication/index.jsp");
+		response.sendRedirect("/index.jsp");
 	}
 	JSONArray businesses = (JSONArray) session
 			.getAttribute("businesses");
@@ -25,8 +28,6 @@
 		session.setAttribute("businesses", "null");
 	}
 %>
-<!DOCTYPE html>
-<html lang="en">
 <head>
 <meta charset="UTF-8">
 
@@ -39,12 +40,11 @@
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
 <style>
-body{
-background-color: #57DAE6;
-}
+
 .jumbotron {
 	background-color: #2E2D88;
 	color: white;
+	padding: 10px;
 }
 /* Adds borders for tabs */
 .tab-content {
@@ -112,27 +112,27 @@ background-color: #57DAE6;
 
 </head>
 
-<body>
-
-
+<body background="https://images.freecreatives.com/wp-content/uploads/2016/02/Dark-Hardwood-Floor-Background.jpg">
 
 
 	<div class="container">
 	<form id="form" method="post" action="RoundTwo">
 		<br>
 		<div class="page-header">
-			<h1>Meal Madness</h1>
+			<h1 style="color: white;">Meal Madness</h1>
 		</div>
 		
 
 			<div class="carousel slide" id="myCarousel">
+			<h1 align="center" style="color: white;">
+							<strong>Round of 8</strong>
+						</h1>
 				<div class="carousel-inner">
 					<div class="item active">
-						<h1 align="center">
-							<strong>Round One!</strong>
-						</h1>
+						
 
 					<%
+					//here we get max correctly
 						int max = businesses.size();
 									if (max < 8) {
 										if (max > 3) {
@@ -146,7 +146,8 @@ background-color: #57DAE6;
 					%>
 					
 						<%
-							if(max == 4){ %>
+							if(max == 4){
+								//in these if statements, we update where we go after the user presses submit%>
 						<script type="text/javascript">
 							document.getElementById('form').action = "RoundThree";
 						</script>
@@ -156,24 +157,28 @@ background-color: #57DAE6;
 							document.getElementById('form').action = "RoundFour";
 						</script>
 						
-														<%}for (int i = 0; i < max; i++) {
+														<%}
+						
+						
+						for (int i = 0; i < max; i++) {
 															JSONObject current_bus = (JSONObject) businesses.get(i);
 															if (i % 2 == 0) {
 																if (i != 0) {
 						%>
 						<div class="item">
-							<h1 align="center">
-								<strong>Match <%=i / 2 + 1%></strong>
-							</h1>
+							
 							<%
-							}
-								}
+							}%>
+																<h2 align="center" style="color: white;">
+																Match <%=i / 2 + 1%>
+															</h2>
+								<%}
 						%>
 
 							<div class="col-sm-5">
 							<%if (max == 1){%>
 								
-								<h1 align="center">
+								<h1 align="center" style="color: white;">
 								<strong>WINNER!</strong>
 							</h1>
 								
@@ -184,16 +189,19 @@ background-color: #57DAE6;
 								</div>
 								<div class="caption">
 									<div class="well">
-										<h2>
+										<h2 style="color: black;">
 											<%=current_bus.get("name")%>
 										</h2>
 
-										<h3>Rating</h3>
+										<h3 style="color: black;">Rating</h3>
 										<p>
 											<%=current_bus.get("rating")%></p>
-										<h3>Price</h3>
-										<p>
-											<%=current_bus.get("price")%></p>
+										<%
+										if(current_bus
+										.get("price") != null){%>
+									<h3>Price</h3>
+									<p>
+										<%=current_bus.get("price")%></p><%}%>
 										<%
 										if(current_bus
 										.get("distance") != null){%>
@@ -214,14 +222,24 @@ background-color: #57DAE6;
 									String reviewHTML = getReviewFromID(
 													(String) current_bus.get("id"),
 													(String) session.getAttribute("auth"));
-											String reviewArr[] = reviewHTML.split("<p lang=\"en\">");
+										
+											//we use yelp here to get the map of the business, as well as the full text for each review. The api only give 50 characters or so
+										String mapSource = reviewHTML.substring(reviewHTML.indexOf("https://maps.googleapis.com"), reviewHTML.indexOf(" width=\"286")-1);
+										//mapSource is the image of the business on the map
+											mapSource = mapSource.replaceAll("&amp;", "&");
+										session.setAttribute("restMap"+i,mapSource );
+										//we set this source as an attribute to be used later
+										String reviewArr[] = reviewHTML.split("<p lang=\"en\">");
 											for (int j = 1; j < 4; j++) {
 												reviewArr[j] = reviewArr[j].substring(0,
 														reviewArr[j].indexOf("</p>"));
 												session.setAttribute("review-"+i+"-"+(j-1),reviewArr[j]);%>
+												//we set an attribute object for each of the 3 reviews for each business
+												//we do all of the processing here
 										<input type="hidden" name="review-<%=i%>-<%=(j-1)%>"
 											value="<%=reviewArr[j]%>">
 										<%
+										//we also add the review as a hidden parameter, so that way we can analyze it in the next servlet for redirects
 											}
 								%>
 										<h3>Review 1</h3>
@@ -233,9 +251,12 @@ background-color: #57DAE6;
 
 										<div class="radio">
 											<label><input type="radio"
+											
 												name="optradio<%=i / 2 + 1%>" checked="checked"
 												id="radio<%=i%>" style="transform: scale(2);" value="<%=i%>"><strong>Winner</strong></label>
 										</div>
+										<!-- we name the optradio for match one as optradio1 and so on
+										the value is simply the restaurant number -->
 										<%
 										}
 									%>
@@ -266,7 +287,7 @@ background-color: #57DAE6;
 						} else {
 					%>
 						<div class="col-sm-1"
-							style="display: flex; vertical-align: middle; justify-content: center; align-items: center;">
+							style="display: flex; vertical-align: middle; justify-content: center; align-items: center; color:white;">
 							<h2>VS</h2>
 						</div>
 						<%
@@ -307,10 +328,17 @@ background-color: #57DAE6;
 
 </body>
 </html>
-<%!public String getReviewFromID(String ID, String auth) {
-		String url = "https://api.yelp.com/v3/businesses/" + ID + "/reviews";
-		//String url = "https://www.yelp.com/biz/a-pig-in-a-fur-coat-madison?hrid=borexsbr6a_k409-J9nlJw&adjust_creative=iJUPQDxk-6lz7gz5CpfMCQ&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_reviews&utm_source=iJUPQDxk-6lz7gz5CpfMCQ";
 
+<%!
+/**
+@param ID - the businesses id
+@param auth - the authentication token
+@return the html of the restaurants yelp page
+*/
+
+public String getReviewFromID(String ID, String auth) {
+		String url = "https://api.yelp.com/v3/businesses/" + ID + "/reviews";
+		//here we get the reviews of the business from the api
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpGet getRequest = new HttpGet(url);
 
@@ -325,6 +353,7 @@ background-color: #57DAE6;
 			CloseableHttpResponse response = client.execute(getRequest);
 			//System.out.println(getRequest.getURI());
 			String responseString = EntityUtils.toString(response.getEntity());
+			//apparently the api only gives us 50 or so characters, so instead we go to the yelp page and pull it
 			//System.out.println(responseString);
 			client.close();
 			response.close();
@@ -333,6 +362,7 @@ background-color: #57DAE6;
 			JSONArray reviews = (JSONArray) json.get("reviews");
 			json = (JSONObject) reviews.get(0);
 			url = (String) json.get("url");
+			//this is the url of the businesses's yelp page
 			client = HttpClients.createDefault();
 			getRequest = new HttpGet(url);
 
@@ -346,6 +376,7 @@ background-color: #57DAE6;
 			response = client.execute(getRequest);
 			//System.out.println(getRequest.getURI());
 			responseString = EntityUtils.toString(response.getEntity());
+			//this string is the yelp page's html
 			//System.out.println(responseString);
 			client.close();
 			response.close();

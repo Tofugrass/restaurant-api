@@ -1,3 +1,6 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <%@ page import="java.util.*"%>
 <%@ page import="javax.servlet.http.HttpServletRequest"%>
 <%@ page import="javax.servlet.http.HttpServletResponse"%>
@@ -25,16 +28,14 @@
 		session.setAttribute("businesses", "null");
 	}
 %>
-<!DOCTYPE html>
-<html lang="en">
-<head>
+
 <meta charset="UTF-8">
 
 <!-- If IE use the latest rendering engine -->
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 <!-- Set the page to the width of the device and set the zoom level -->
-<title>Meal Madness WINNER</title>
+<title>Meal Madness Round 1</title>
 <link rel="stylesheet" type="text/css"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
@@ -66,7 +67,7 @@ background-color: #57DAE6;
 	position: relative;
 	padding-bottom: 100%;
 	overflow: hidden;
-	width: 75%;
+	width: 100%;
 }
 
 .img-wrapper img {
@@ -74,8 +75,7 @@ background-color: #57DAE6;
 	top: 0;
 	left: 0;
 	width: 100%;
-	height: auto;
-	justify: center;
+	height: 100%;
 }
 /* Carousel Control */
 .control-box {
@@ -120,32 +120,51 @@ background-color: #57DAE6;
 
 </head>
 
-<body>
+<body background="https://images.freecreatives.com/wp-content/uploads/2016/02/Dark-Hardwood-Floor-Background.jpg">
+
+
+
+
 	<div class="container">
 		<br>
 		<div class="page-header">
-			<h1>Meal Madness</h1>
+			<h1 style="color: white;">Meal Madness</h1>
 		</div>
+		<form method="post" action=RoundThree>
 
-					<div class="item active">
-						<h1 align="center">
-							<strong>WINNER!</strong>
+			<div class="carousel slide" id="myCarousel">
+				<div class="carousel-inner">
+				<h1 align="center" style="color: white;">
+							<strong>Round of 4</strong>
 						</h1>
+					<div class="item active">
+						
+
    
 						<%
-						JSONObject current_bus = (JSONObject) businesses.get(Integer.parseInt((String)session.getAttribute("winner1")));
-							
+						
+						for (int i = 0; i < 4; i++) {
+							JSONObject current_bus = (JSONObject) businesses.get(Integer.parseInt((String)session.getAttribute("winner"+(i+1))));
+							if (i % 2 == 0) {
+								if (i != 0) {
+%>
+<div class="item">
+
+<%
+}%>
+								<h2 align="center" style="color: white;">
+								Match <%=i / 2 + 1%>
+							</h2>
+<%}
 						%>
-	<div class="col-lg-2 col-md-2" align="center">
-	</div>
-							<div class="col-sm-12 col-lg-8 col-md-8" align="center">
-								<div class="img-wrapper" >
-								
+
+							<div class="col-sm-5">
+								<div class="img-wrapper">
 									<a href="#"><img src="<%=current_bus.get("image_url")%>"
 										alt="" class="img-thumbnail"></a>
 								</div>
-								<div class="caption" >
-								<div class="well" style="width:75%;">
+								<div class="caption">
+								<div class="well">
 									<h2>
 										<%=current_bus.get("name")%>
 									</h2>
@@ -153,9 +172,12 @@ background-color: #57DAE6;
 									<h3>Rating</h3>
 									<p>
 										<%=current_bus.get("rating")%></p>
+									<%
+										if(current_bus
+										.get("price") != null){%>
 									<h3>Price</h3>
 									<p>
-										<%=current_bus.get("price")%></p>
+										<%=current_bus.get("price")%></p><%}%>
 									<%
 										if(current_bus
 										.get("distance") != null){%>
@@ -173,21 +195,83 @@ background-color: #57DAE6;
 									<p><%=current_bus.get("display_phone")%></p>
 
 									
-									
+									<h3>Review 2</h3>
+										<p><%=	session.getAttribute("review-"+Integer.parseInt((String)session.getAttribute("winner"+(i+1)))+"-"+1)%></p>
 									<!-- //TODO: print map 
 									
 									<p><%=session.getAttribute("location")%></p>-->
+									<img alt="Map" height="135" src="<%= session.getAttribute("restMap"+(Integer.parseInt((String)session.getAttribute("winner"+(i+1)))))%>" width="286">
 									
+									<%
+									if (i % 2 == 0) {
+								%>
 
-									<a class="btn btn-mini"
-										href="<%=(String) current_bus.get("url") %>" target="_blank">»
-										Read More</a>
+									<div class="radio">
+										<label><input type="radio"
+											name="optradio<%=i / 2 + 1%>" checked="checked"
+											id="radio<%=i%>" style="transform: scale(2);"
+											value="<%=Integer.parseInt((String)session.getAttribute("winner"+(i+1)))%>"><strong>Winner</strong></label>
+									</div>
+									<%
+										}
+									
+									else{
+									%>
+									<div class="radio">
+										<label><input type="radio"
+											name="optradio<%=i / 2 + 1%>" id="radio<%=i%>"
+											style="transform: scale(2);" value="<%=Integer.parseInt((String)session.getAttribute("winner"+(i+1)))%>"><strong>Winner</strong></label>
+									</div>
+
+									<%
+									}
+								%>
 								</div>
 								</div>
-								
-							</div>				
+							</div>
+
+							<%
+							if (i % 2 != 0) {
+						%>
+
+						</div>
+
+						<%
+						} else {
+					%>
+						<div class="col-sm-1"
+							style="display: flex; vertical-align: middle; justify-content: center; align-items: center; color:white;">
+							<h2>VS</h2>
+						</div>
+						<%
+						}}
+					%>
 
 					</div>
+
+
+					<nav>
+						<ul class="control-box pager">
+							<li><a data-slide="prev" href="#myCarousel" class=""><i
+									class="glyphicon glyphicon-chevron-left"></i></a></li>
+							<li><a data-slide="next" href="#myCarousel" class=""><i
+									class="glyphicon glyphicon-chevron-right"></i></a></li>
+						</ul>
+					</nav>
+					<!-- /.control-box -->
+				</div>
+				<!-- /#myCarousel -->
+
+			</div>
+
+			<div class="text-center">
+				<button type="submit" value="Send"
+					class="btn btn-primary">GO TO FINALS</button>
+				<br>
+				<br>
+				<br>
+			</div>
+		</form>
 
 		<script
 			src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>

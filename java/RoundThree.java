@@ -9,22 +9,26 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * Servlet implementation class RoundFour
+ * Servlet implementation class RoundThree
  */
-public class RoundFour extends HttpServlet {
+public class RoundThree extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public RoundFour() {
+    public RoundThree() {
         super();
         // TODO Auto-generated constructor stub
     }
-
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if(request.getParameter("optradio1")==null) {
-			response.sendRedirect("http://localhost:8080/j2eeapplication/index.jsp");
+    	
+		if(request.getParameter("optradio1")==null || request.getParameter("optradio2")==null) {
+			//again we make sure the user is tunneled correctly
+			String redirect = request.getRequestURL().toString();
+			redirect = redirect.substring(0, redirect.lastIndexOf("/")+1);
+			redirect+="index.jsp";
+			response.sendRedirect(redirect);
 		}else {
 		 doPost(request, response);
 		}
@@ -41,8 +45,11 @@ public class RoundFour extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
-			session.setAttribute("winner1", request.getParameter("optradio1"));
-		request.getRequestDispatcher("/bracket4.jsp").forward(request, response);
+		for(int i = 1; i < 3; i++) {
+			session.setAttribute("winner"+i, request.getParameter("optradio"+i));
+			//we set an attribute called winner1-2, and we set that as the restaurant number that won the previous round
+		}
+		request.getRequestDispatcher("/bracket3.jsp").forward(request, response);
 		//request.getRequestDispatcher("").forward(request, response);
 	}
 

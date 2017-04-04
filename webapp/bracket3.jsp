@@ -1,3 +1,7 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <%@ page import="java.util.*"%>
 <%@ page import="javax.servlet.http.HttpServletRequest"%>
 <%@ page import="javax.servlet.http.HttpServletResponse"%>
@@ -25,10 +29,8 @@
 		session.setAttribute("businesses", "null");
 	}
 %>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
+
+
 
 <!-- If IE use the latest rendering engine -->
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -37,6 +39,14 @@
 <title>Meal Madness Round 3</title>
 <link rel="stylesheet" type="text/css"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+ <!-- Bootstrap core CSS -->
+    <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="cover.css" rel="stylesheet">
 
 <style>
 body{
@@ -108,18 +118,12 @@ background-color: #57DAE6;
 		word-break: break-all;
 	}
 }
-<%for (int i = 0; i < 4; i++){%>
-	#map<%=i%> {
-		  height: 400px;
-		  width: 100%;
-		 }
-<%}%>
 
 </style>
 
 </head>
 
-<body>
+<body background="https://images.freecreatives.com/wp-content/uploads/2016/02/Dark-Hardwood-Floor-Background.jpg">
 
 
 
@@ -127,120 +131,118 @@ background-color: #57DAE6;
 	<div class="container">
 		<br>
 		<div class="page-header">
-			<h1>Meal Madness</h1>
+			<h1 style="color: white;">Meal Madness</h1>
 		</div>
 		<form method="post" action=RoundFour>
 
-		
-					<div class="item active">
-						<h1 align="center">
-							<strong>Round Three!</strong>
+		<h1 align="center" style="color: white;">
+							<strong>Finals</strong>
 						</h1>
+					<div class="item active">
 
-   
-						<%
+
+
+				<%
 						
 						for (int i = 0; i < 2; i++) {
 							JSONObject current_bus = (JSONObject) businesses.get(Integer.parseInt((String)session.getAttribute("winner"+(i+1))));
 							if (i % 2 == 0) {
 								if (i != 0) {
-					%>
-						<div class="item">
-							<h1 align="center">
-								<strong>Match <%=i / 2 + 1%></strong>
-							</h1>
-							<%
-							}
-								}
+%>
+				<div class="item">
+
+					<%
+						}
+					}
 						%>
 
-							<div class="col-sm-5">
-								<div class="img-wrapper">
-									<a href="#"><img src="<%=current_bus.get("image_url")%>"
-										alt="" class="img-thumbnail"></a>
-								</div>
-								<div class="caption">
-								<div class="well">
-									<h2>
-										<%=current_bus.get("name")%>
-									</h2>
+					<div class="col-sm-5">
+						<div class="img-wrapper">
+							<a href="#"><img src="<%=current_bus.get("image_url")%>"
+								alt="" class="img-thumbnail"></a>
+						</div>
+						<div class="caption">
+							<div class="well">
+								<h2>
+									<%=current_bus.get("name")%>
+								</h2>
 
-									<h3>Rating</h3>
-									<p>
-										<%=current_bus.get("rating")%></p>
+								<h3>Rating</h3>
+								<p>
+									<%=current_bus.get("rating")%></p>
+								<%
+										if(current_bus
+										.get("price") != null){%>
 									<h3>Price</h3>
 									<p>
-										<%=current_bus.get("price")%></p>
-									<%
+										<%=current_bus.get("price")%></p><%}%>
+								<%
 										if(current_bus
 										.get("distance") != null){%>
-											<h3>Distance</h3>
-											<p>
-												<%=((double) Math.round((Double) current_bus
+								<h3>Distance</h3>
+								<p>
+									<%=((double) Math.round((Double) current_bus
 								.get("distance") / 1609 * 100d) / 100d)%>
-												Miles
-											</p>
-										<%	
+									Miles
+								</p>
+								<%	
 										}
 										%>
-									
-									<h3>Contact</h3>
-									<p><%=current_bus.get("display_phone")%></p>
 
-									
-									<h3>Review 3</h3>
-										<p><%=	session.getAttribute("review-"+Integer.parseInt((String)session.getAttribute("winner"+(i+1)))+"-"+2)%></p>
-									<!-- //TODO: print map 
+								<h3>Contact</h3>
+								<p><%=current_bus.get("display_phone")%></p>
+
+
+								<h3>Review 3</h3>
+								<p><%=	session.getAttribute("review-"+Integer.parseInt((String)session.getAttribute("winner"+(i+1)))+"-"+2)%></p>
+								<!-- //TODO: print map 
 									
 									<p><%=session.getAttribute("location")%></p>-->
-									
+								<img alt="Map" height="135"
+									src="<%= session.getAttribute("restMap"+(Integer.parseInt((String)session.getAttribute("winner"+(i+1)))))%>"
+									width="286"> <a class="btn btn-mini"
+									href="<%=(String) current_bus.get("url") %>" target="_blank">»
+									Read More</a>
 
-									<a class="btn btn-mini"
-										href="<%=(String) current_bus.get("url") %>" target="_blank">»
-										Read More</a>
-									
-									<%
+								<%
 									if (i % 2 == 0) {
 								%>
 
-									<div class="radio">
-										<label><input type="radio"
-											name="optradio<%=i / 2 + 1%>" checked="checked"
-											id="radio<%=i%>" style="transform: scale(2);"
-											value="<%=Integer.parseInt((String)session.getAttribute("winner"+(i+1)))%>"><strong>Winner</strong></label>
-									</div>
-									
-									<%
-										}
-									%>
-   
-									<%
-										if (i % 2 != 0) {
-									%>
-									<div class="radio">
-										<label><input type="radio"
-											name="optradio<%=i / 2 + 1%>" id="radio<%=i%>"
-											style="transform: scale(2);" value="<%=i%>"><strong>Winner</strong></label>
-									</div>
+								<div class="radio">
+									<label><input type="radio"
+										name="optradio<%=i / 2 + 1%>" checked="checked"
+										id="radio<%=i%>" style="transform: scale(2);"
+										value="<%=Integer.parseInt((String)session.getAttribute("winner"+(i+1)))%>"><strong>Winner</strong></label>
+								</div>
 
-									<%
+								<%
+										}
+									else {
+									%>
+								<div class="radio">
+									<label><input type="radio"
+										name="optradio<%=i / 2 + 1%>" id="radio<%=i%>"
+										style="transform: scale(2);" value="<%=Integer.parseInt((String)session.getAttribute("winner"+(i+1)))%>"><strong>Winner</strong></label>
+								</div>
+
+								<%
 									}
 								%>
-								</div>
-								</div>
 							</div>
+						</div>
+					</div>
 
-							<%
+					<%
 							if (i % 2 != 0) {
 						%>
 
-						</div>
+				</div>
 
-						<%
+				<%
 						} else {
 					%>
 						<div class="col-sm-1"
-							style="display: flex; vertical-align: middle; justify-content: center; align-items: center;">
+							style="display: flex; vertical-align: middle; justify-content: center; align-items: center; color:white;">
 							<h2>VS</h2>
 						</div>
 						<%
